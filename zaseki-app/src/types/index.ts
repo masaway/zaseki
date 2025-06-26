@@ -35,6 +35,7 @@ export interface Seat {
   occupied: boolean;
   occupiedBy?: Member;
   qrCode?: string;
+  orientation?: 'up' | 'down' | 'left' | 'right';
 }
 
 export interface Constellation {

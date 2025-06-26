@@ -4,71 +4,129 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '@/stores/app-store';
 import { SeatComponent } from './seat-component';
 import { MemberTooltip } from '../constellation/member-tooltip';
+import { calculateGalaxyPosition } from '@/utils/fan-layout';
+import { useState, useEffect } from 'react';
 
 export function OfficeView() {
   const { seats, selectedMember, setSelectedMember } = useAppStore();
+  const [screenSize, setScreenSize] = useState({ width: 1024, height: 768 });
+
+  useEffect(() => {
+    const updateScreenSize = () => {
+      setScreenSize({ 
+        width: window.innerWidth, 
+        height: window.innerHeight 
+      });
+    };
+    
+    updateScreenSize();
+    window.addEventListener('resize', updateScreenSize);
+    return () => window.removeEventListener('resize', updateScreenSize);
+  }, []);
+
+  // オフィス中央配置の座標
+  const officeCenter = {
+    x: screenSize.width / 2,
+    y: screenSize.height / 2
+  };
 
   return (
-    <div className="relative w-full h-full bg-gray-50 overflow-hidden">
-      {/* オフィスレイアウト背景 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
-        {/* グリッドパターン */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-          }}
-        />
+    <div className="relative w-full h-full bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900 overflow-hidden">
+      {/* 星空背景 */}
+      <div className="absolute inset-0">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full opacity-60"
+            style={{
+              left: `${((i * 7) % 100)}%`,
+              top: `${((i * 13) % 100)}%`,
+            }}
+            animate={{
+              opacity: [0.2, 0.8, 0.2],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 2 + ((i * 3) % 3),
+              repeat: Infinity,
+              delay: (i * 0.1) % 2,
+            }}
+          />
+        ))}
       </div>
 
-      {/* セクション区切り */}
-      <div className="absolute inset-0">
-        {/* セクションA */}
+      {/* オフィス全体エリア（画面中央配置） */}
+      <motion.div
+        className="absolute"
+        style={{
+          left: officeCenter.x - 500,
+          top: officeCenter.y - 350,
+          width: 1000,
+          height: 700
+        }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        {/* セクションA背景 */}
         <motion.div
-          className="absolute bg-blue-100 bg-opacity-50 rounded-lg border-2 border-dashed border-blue-300"
-          style={{ left: 50, top: 50, width: 300, height: 200 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="absolute top-2 left-2 text-blue-600 font-semibold text-sm">
-            セクションA
-          </div>
-        </motion.div>
-
-        {/* セクションB */}
-        <motion.div
-          className="absolute bg-green-100 bg-opacity-50 rounded-lg border-2 border-dashed border-green-300"
-          style={{ left: 50, top: 300, width: 300, height: 200 }}
+          className="absolute bg-blue-900/20 rounded-lg border-2 border-dashed border-blue-400/50"
+          style={{ left: 30, top: 30, width: 450, height: 480 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="absolute top-2 left-2 text-green-600 font-semibold text-sm">
-            セクションB
+          <div className="absolute top-2 left-2 text-blue-300 font-semibold text-sm">
+            ✨ セクションA
           </div>
         </motion.div>
 
-        {/* 会議室 */}
+        {/* セクションB背景 */}
         <motion.div
-          className="absolute bg-purple-100 bg-opacity-50 rounded-lg border-2 border-dashed border-purple-300"
-          style={{ left: 400, top: 100, width: 200, height: 150 }}
+          className="absolute bg-cyan-900/20 rounded-lg border-2 border-dashed border-cyan-400/50"
+          style={{ left: 520, top: 30, width: 450, height: 480 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <div className="absolute top-2 left-2 text-purple-600 font-semibold text-sm">
-            会議室
+          <div className="absolute top-2 left-2 text-cyan-300 font-semibold text-sm">
+            ⭐ セクションB
           </div>
         </motion.div>
-      </div>
 
-      {/* 座席 */}
-      <div className="absolute inset-0">
+        {/* 共有エリア */}
+        <motion.div
+          className="absolute bg-purple-900/20 rounded-lg border-2 border-dashed border-purple-400/50"
+          style={{ left: 350, top: 350, width: 300, height: 150 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <div className="absolute top-2 left-2 text-purple-300 font-semibold text-sm">
+            🛸 共有エリア・会議室
+          </div>
+        </motion.div>
+        
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center">
+          <div className="text-blue-300 text-lg font-bold">
+            🌌 福岡本社オフィス
+          </div>
+          <div className="text-blue-400 text-sm">
+            出席: {seats.filter(seat => seat.occupied).length}名 / 全{seats.length}席
+          </div>
+        </div>
+      </motion.div>
+
+      {/* 座席（実際のオフィス配置） */}
+      <motion.div
+        className="absolute"
+        style={{
+          left: officeCenter.x - 500,
+          top: officeCenter.y - 350,
+          width: 1000,
+          height: 700
+        }}
+      >
         {seats.map((seat, index) => (
           <motion.div
             key={seat.id}
@@ -81,42 +139,56 @@ export function OfficeView() {
             <SeatComponent seat={seat} />
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* 凡例 */}
+      {/* 銀河オフィス凡例 */}
       <motion.div
-        className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4"
+        className="absolute bottom-4 left-4 bg-gradient-to-br from-blue-900/80 to-purple-900/80 backdrop-blur-sm rounded-lg border border-blue-400/50 p-4 text-white shadow-2xl"
+        style={{
+          boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)'
+        }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
       >
-        <h3 className="font-semibold text-gray-800 mb-2">凡例</h3>
+        <h3 className="font-semibold text-blue-300 mb-3 flex items-center">
+          🌌 ステーション状態
+        </h3>
         <div className="space-y-2 text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-500 rounded" />
-            <span>空席</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 bg-gradient-to-br from-cyan-600 to-cyan-400 rounded shadow-lg" 
+                 style={{ boxShadow: '0 0 8px rgba(34, 211, 238, 0.6)' }} />
+            <span className="text-cyan-300">空きステーション</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-500 rounded" />
-            <span>使用中</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 bg-gradient-to-br from-blue-600 to-blue-400 rounded shadow-lg"
+                 style={{ boxShadow: '0 0 8px rgba(59, 130, 246, 0.6)' }} />
+            <span className="text-blue-300">使用中ステーション</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded" />
-            <span>予約済み</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-4 h-4 bg-gradient-to-br from-purple-600 to-purple-400 rounded shadow-lg"
+                 style={{ boxShadow: '0 0 8px rgba(147, 51, 234, 0.6)' }} />
+            <span className="text-purple-300">予約済みステーション</span>
           </div>
         </div>
       </motion.div>
 
-      {/* QRコードスキャン案内 */}
+      {/* 量子チェックイン案内 */}
       <motion.div
-        className="absolute bottom-4 right-4 bg-blue-500 text-white rounded-lg shadow-lg p-4 max-w-xs"
+        className="absolute bottom-4 right-4 bg-gradient-to-br from-cyan-900/80 to-blue-900/80 backdrop-blur-sm rounded-lg border border-cyan-400/50 p-4 max-w-xs text-white shadow-2xl"
+        style={{
+          boxShadow: '0 0 20px rgba(34, 211, 238, 0.3)'
+        }}
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1.2 }}
       >
-        <h3 className="font-semibold mb-2">📱 チェックイン方法</h3>
-        <p className="text-sm">
-          座席のQRコードをスマートフォンで読み取って、チェックインしてください。
+        <h3 className="font-semibold mb-2 text-cyan-300 flex items-center">
+          ⚡ 量子チェックイン
+        </h3>
+        <p className="text-sm text-cyan-200">
+          ステーションの量子QRポート（⚡）をスキャンして、
+          宇宙オフィスにチェックインしてください。
         </p>
       </motion.div>
 

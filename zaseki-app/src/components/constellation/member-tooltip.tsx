@@ -10,35 +10,6 @@ interface MemberTooltipProps {
 }
 
 export function MemberTooltip({ member, onClose }: MemberTooltipProps) {
-  const getStatusText = (status: Member['status']) => {
-    switch (status) {
-      case 'online':
-        return 'オンライン';
-      case 'busy':
-        return '取り込み中';
-      case 'away':
-        return '離席中';
-      case 'offline':
-        return 'オフライン';
-      default:
-        return status;
-    }
-  };
-
-  const getStatusColor = (status: Member['status']) => {
-    switch (status) {
-      case 'online':
-        return 'bg-green-500';
-      case 'busy':
-        return 'bg-red-500';
-      case 'away':
-        return 'bg-yellow-500';
-      case 'offline':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
 
   return (
     <motion.div
@@ -95,7 +66,7 @@ export function MemberTooltip({ member, onClose }: MemberTooltipProps) {
           <div className="absolute -top-2 left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-blue-50" />
           
           <p className="text-sm text-gray-700 italic">
-            "{member.comment}"
+            &quot;{member.comment}&quot;
           </p>
         </motion.div>
       )}

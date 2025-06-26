@@ -147,7 +147,7 @@ export function calculateRegionalPosition(
 export function getOfficeCenter(screenWidth: number, screenHeight: number): Coordinates {
   return {
     x: screenWidth / 2,
-    y: screenHeight * 0.8 // より画面下部寄りに配置
+    y: screenHeight / 2 // 画面中央に配置（銀河ゾーン内に収める）
   };
 }
 
@@ -175,14 +175,62 @@ export function getZoneByPrefecture(prefecture: string): string | undefined {
 export function transformOfficeLayout(
   seatPosition: Coordinates,
   officeCenter: Coordinates,
-  scale: number = 1.2
+  scale: number = 0.3
 ): Coordinates {
-  // 座席配置の中心点を計算（セクションA・Bの中心あたり）
-  const seatLayoutCenterX = 160; // 座席配置の中心X座標
-  const seatLayoutCenterY = 250; // 座席配置の中心Y座標
+  // 新しい座席配置の中心点を計算（セクションA・Bの全体中心）
+  // セクションA範囲: x: 80-280, y: 80-200
+  // セクションB範囲: x: 560-760, y: 80-200  
+  const seatLayoutCenterX = 420; // 座席配置全体の中心X座標（(80+760)/2）
+  const seatLayoutCenterY = 140; // 座席配置全体の中心Y座標（(80+200)/2）
+  
+  // 銀河ゾーンサイズ（700x700px）を考慮してより小さくスケーリング
+  // 座席配置全体サイズ: 幅680px(760-80), 高さ120px(200-80)
+  // 銀河ゾーン内に収めるため、最大300px程度の範囲に制限
+  const maxGalaxyRadius = 250; // 銀河ゾーン半径の約70%
+  const currentLayoutWidth = 680; // 現在の座席配置幅
+  const galaxyScale = Math.min(scale, maxGalaxyRadius * 2 / currentLayoutWidth);
   
   return {
-    x: officeCenter.x + (seatPosition.x - seatLayoutCenterX) * scale,
-    y: officeCenter.y + (seatPosition.y - seatLayoutCenterY) * scale
+    x: officeCenter.x + (seatPosition.x - seatLayoutCenterX) * galaxyScale,
+    y: officeCenter.y + (seatPosition.y - seatLayoutCenterY) * galaxyScale
+  };
+}
+
+/**
+ * 銀河の渦巻き状に座席を配置する関数
+ * @param seatIndex 座席のインデックス（0から開始）
+ * @param totalSeats 総座席数
+ * @param officeCenter オフィス中心座標
+ * @param maxRadius 最大半径
+ * @returns 銀河配置での座標
+ */
+export function calculateGalaxyPosition(
+  seatIndex: number,
+  totalSeats: number,
+  officeCenter: Coordinates,
+  maxRadius: number = 250
+): Coordinates {
+  // 渦巻きの腕の数（銀河の渦巻き腕）
+  const numberOfArms = 3;
+  
+  // 座席を腕ごとに分散
+  const armIndex = seatIndex % numberOfArms;
+  const positionInArm = Math.floor(seatIndex / numberOfArms);
+  const seatsPerArm = Math.ceil(totalSeats / numberOfArms);
+  
+  // 渦巻きパラメータ
+  const armAngleOffset = (2 * Math.PI * armIndex) / numberOfArms;
+  const progress = positionInArm / seatsPerArm; // 0から1の進行度
+  
+  // 半径（中心から外側へ）
+  const radius = Math.sqrt(progress) * maxRadius;
+  
+  // 角度（渦巻き効果）
+  const spiralFactor = 2; // 渦巻きの巻き数
+  const angle = armAngleOffset + progress * Math.PI * spiralFactor;
+  
+  return {
+    x: officeCenter.x + Math.cos(angle) * radius,
+    y: officeCenter.y + Math.sin(angle) * radius
   };
 }
