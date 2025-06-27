@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '@/stores/app-store';
 import { SeatComponent } from './seat-component';
 import { MemberTooltip } from '../constellation/member-tooltip';
-import { calculateGalaxyPosition } from '@/utils/fan-layout';
 import { useState, useEffect } from 'react';
 
 export function OfficeView() {
@@ -55,14 +54,24 @@ export function OfficeView() {
         ))}
       </div>
 
+      {/* オフィスタイトル（タブと同じ高さ） */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center z-10">
+        <div className="text-blue-300 text-lg font-bold">
+          🌌 福岡本社オフィス
+        </div>
+        <div className="text-blue-400 text-sm">
+          出席: {seats.filter(seat => seat.occupied).length}名 / 全{seats.length}席
+        </div>
+      </div>
+
       {/* オフィス全体エリア（画面中央配置） */}
       <motion.div
         className="absolute"
         style={{
           left: officeCenter.x - 500,
-          top: officeCenter.y - 350,
+          top: officeCenter.y - 380,
           width: 1000,
-          height: 700
+          height: 810
         }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -71,7 +80,7 @@ export function OfficeView() {
         {/* セクションA背景 */}
         <motion.div
           className="absolute bg-blue-900/20 rounded-lg border-2 border-dashed border-blue-400/50"
-          style={{ left: 30, top: 30, width: 450, height: 480 }}
+          style={{ left: 15, top: 15, width: 480, height: 600 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -84,7 +93,7 @@ export function OfficeView() {
         {/* セクションB背景 */}
         <motion.div
           className="absolute bg-cyan-900/20 rounded-lg border-2 border-dashed border-cyan-400/50"
-          style={{ left: 520, top: 30, width: 450, height: 480 }}
+          style={{ left: 505, top: 15, width: 480, height: 600 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -97,7 +106,7 @@ export function OfficeView() {
         {/* 共有エリア */}
         <motion.div
           className="absolute bg-purple-900/20 rounded-lg border-2 border-dashed border-purple-400/50"
-          style={{ left: 350, top: 350, width: 300, height: 150 }}
+          style={{ left: 350, top: 630, width: 300, height: 120 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -106,15 +115,6 @@ export function OfficeView() {
             🛸 共有エリア・会議室
           </div>
         </motion.div>
-        
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center">
-          <div className="text-blue-300 text-lg font-bold">
-            🌌 福岡本社オフィス
-          </div>
-          <div className="text-blue-400 text-sm">
-            出席: {seats.filter(seat => seat.occupied).length}名 / 全{seats.length}席
-          </div>
-        </div>
       </motion.div>
 
       {/* 座席（実際のオフィス配置） */}
@@ -122,9 +122,9 @@ export function OfficeView() {
         className="absolute"
         style={{
           left: officeCenter.x - 500,
-          top: officeCenter.y - 350,
+          top: officeCenter.y - 380,
           width: 1000,
-          height: 700
+          height: 810
         }}
       >
         {seats.map((seat, index) => (

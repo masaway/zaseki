@@ -181,16 +181,17 @@ const mockMembers: Member[] = [
 const mockSeats: Seat[] = [
   // セクションA - 上部・中部・下部の3エリア構成（各6席、合計18席）
   // オフィス全体エリア中央: (screenSize.width/2 - 500, screenSize.height/2 - 350)
-  // セクションA枠位置: left: 30, top: 30, width: 450, height: 480
-  // 座席間隔: 横120px、縦70px、エリア閕60px
+  // セクションA枠位置: left: 15, top: 15, width: 480, height: 570
+  // 座席間隔: 横120px、縦70px、エリア間80px（隙間拡大）
+  // 座席群をセクション枠中央に配置: 枠内余白40px、座席エリア開始位置x=95
   
-  // 上部エリア - 1行目（向き合う形の前列 - 下向き）
+  // 上部エリア - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-a-top-1-1',
     number: 'A-T1',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 60 },
+    position: { x: 95, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[0], // 田中太郎
     qrCode: 'QR-A-T1',
@@ -201,7 +202,7 @@ const mockSeats: Seat[] = [
     number: 'A-T2',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 60 },
+    position: { x: 215, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[1], // 佐藤花子
     qrCode: 'QR-A-T2',
@@ -212,20 +213,20 @@ const mockSeats: Seat[] = [
     number: 'A-T3',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 60 },
+    position: { x: 335, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[4], // 伊藤美咲
     qrCode: 'QR-A-T3',
     orientation: 'down'
   },
   
-  // 上部エリア - 2行目（向き合う形の後列 - 上向き）
+  // 上部エリア - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a-top-2-1',
     number: 'A-T4',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 130 },
+    position: { x: 95, y: 145 },
     occupied: false,
     qrCode: 'QR-A-T4',
     orientation: 'up'
@@ -235,7 +236,7 @@ const mockSeats: Seat[] = [
     number: 'A-T5',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 130 },
+    position: { x: 215, y: 145 },
     occupied: false,
     qrCode: 'QR-A-T5',
     orientation: 'up'
@@ -245,139 +246,152 @@ const mockSeats: Seat[] = [
     number: 'A-T6',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 130 },
+    position: { x: 335, y: 145 },
     occupied: false,
     qrCode: 'QR-A-T6',
     orientation: 'up'
   },
 
-  // 中部エリア（Frame 4） - 1行目
+  // 中部エリア（Frame 4） - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-a4-1-1',
     number: 'A4-1',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 230 },
+    position: { x: 95, y: 265 },
     occupied: false,
-    qrCode: 'QR-A4-1'
+    qrCode: 'QR-A4-1',
+    orientation: 'down'
   },
   {
     id: 'seat-a4-1-2',
     number: 'A4-2',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 230 },
+    position: { x: 215, y: 265 },
     occupied: false,
-    qrCode: 'QR-A4-2'
+    qrCode: 'QR-A4-2',
+    orientation: 'down'
   },
   {
     id: 'seat-a4-1-3',
     number: 'A4-3',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 230 },
+    position: { x: 335, y: 265 },
     occupied: false,
-    qrCode: 'QR-A4-3'
+    qrCode: 'QR-A4-3',
+    orientation: 'down'
   },
   
-  // 中部エリア（Frame 4） - 2行目
+  // 中部エリア（Frame 4） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a4-2-1',
     number: 'A4-4',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 300 },
+    position: { x: 95, y: 335 },
     occupied: false,
-    qrCode: 'QR-A4-4'
+    qrCode: 'QR-A4-4',
+    orientation: 'up'
   },
   {
     id: 'seat-a4-2-2',
     number: 'A4-5',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 300 },
+    position: { x: 215, y: 335 },
     occupied: false,
-    qrCode: 'QR-A4-5'
+    qrCode: 'QR-A4-5',
+    orientation: 'up'
   },
   {
     id: 'seat-a4-2-3',
     number: 'A4-6',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 300 },
+    position: { x: 335, y: 335 },
     occupied: false,
-    qrCode: 'QR-A4-6'
+    qrCode: 'QR-A4-6',
+    orientation: 'up'
   },
 
-  // 下部エリア（Frame 3） - 1行目
+  // 下部エリア（Frame 3） - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-a3-1-1',
     number: 'A3-1',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 400 },
+    position: { x: 95, y: 455 },
     occupied: false,
-    qrCode: 'QR-A3-1'
+    qrCode: 'QR-A3-1',
+    orientation: 'down'
   },
   {
     id: 'seat-a3-1-2',
     number: 'A3-2',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 400 },
+    position: { x: 215, y: 455 },
     occupied: false,
-    qrCode: 'QR-A3-2'
+    qrCode: 'QR-A3-2',
+    orientation: 'down'
   },
   {
     id: 'seat-a3-1-3',
     number: 'A3-3',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 400 },
+    position: { x: 335, y: 455 },
     occupied: false,
-    qrCode: 'QR-A3-3'
+    qrCode: 'QR-A3-3',
+    orientation: 'down'
   },
   
-  // 下部エリア（Frame 3） - 2行目
+  // 下部エリア（Frame 3） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a3-2-1',
     number: 'A3-4',
     floor: 1,
     section: 'A',
-    position: { x: 60, y: 470 },
+    position: { x: 95, y: 525 },
     occupied: false,
-    qrCode: 'QR-A3-4'
+    qrCode: 'QR-A3-4',
+    orientation: 'up'
   },
   {
     id: 'seat-a3-2-2',
     number: 'A3-5',
     floor: 1,
     section: 'A',
-    position: { x: 180, y: 470 },
+    position: { x: 215, y: 525 },
     occupied: false,
-    qrCode: 'QR-A3-5'
+    qrCode: 'QR-A3-5',
+    orientation: 'up'
   },
   {
     id: 'seat-a3-2-3',
     number: 'A3-6',
     floor: 1,
     section: 'A',
-    position: { x: 300, y: 470 },
+    position: { x: 335, y: 525 },
     occupied: false,
-    qrCode: 'QR-A3-6'
+    qrCode: 'QR-A3-6',
+    orientation: 'up'
   },
 
   // セクションB - 上部・中部・下部の3エリア構成（各6席、合計18席）
-  // セクションB枠位置: left: 520, top: 30, width: 450, height: 480
-  // 座席間隔: 横120px、縦70px、エリア間60px
+  // セクションB枠位置: left: 505, top: 15, width: 480, height: 570
+  // 座席間隔: 横120px、縦70px、エリア間80px（隙間拡大）
+  // 座席群をセクション枠中央に配置: 枠内余白40px、座席エリア開始位置x=585
   
-  // 上部エリア - 1行目（向き合う形の前列 - 下向き）
+  // 上部エリア - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-b-top-1-1',
     number: 'B-T1',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 60 },
+    position: { x: 585, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[2], // 鈴木次郎
     qrCode: 'QR-B-T1',
@@ -388,7 +402,7 @@ const mockSeats: Seat[] = [
     number: 'B-T2',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 60 },
+    position: { x: 705, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[3], // 高橋三郎
     qrCode: 'QR-B-T2',
@@ -399,20 +413,20 @@ const mockSeats: Seat[] = [
     number: 'B-T3',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 60 },
+    position: { x: 825, y: 75 },
     occupied: true,
     occupiedBy: mockMembers[9], // 加藤雄介
     qrCode: 'QR-B-T3',
     orientation: 'down'
   },
   
-  // 上部エリア - 2行目（向き合う形の後列 - 上向き）
+  // 上部エリア - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b-top-2-1',
     number: 'B-T4',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 130 },
+    position: { x: 585, y: 145 },
     occupied: true,
     occupiedBy: mockMembers[10], // 木村美和
     qrCode: 'QR-B-T4',
@@ -423,7 +437,7 @@ const mockSeats: Seat[] = [
     number: 'B-T5',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 130 },
+    position: { x: 705, y: 145 },
     occupied: true,
     occupiedBy: mockMembers[11], // 斎藤健一
     qrCode: 'QR-B-T5',
@@ -434,126 +448,138 @@ const mockSeats: Seat[] = [
     number: 'B-T6',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 130 },
+    position: { x: 825, y: 145 },
     occupied: false,
     qrCode: 'QR-B-T6',
     orientation: 'up'
   },
 
-  // 中部エリア（Frame 4） - 1行目
+  // 中部エリア（Frame 4） - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-b4-1-1',
     number: 'B4-1',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 230 },
+    position: { x: 585, y: 265 },
     occupied: false,
-    qrCode: 'QR-B4-1'
+    qrCode: 'QR-B4-1',
+    orientation: 'down'
   },
   {
     id: 'seat-b4-1-2',
     number: 'B4-2',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 230 },
+    position: { x: 705, y: 265 },
     occupied: false,
-    qrCode: 'QR-B4-2'
+    qrCode: 'QR-B4-2',
+    orientation: 'down'
   },
   {
     id: 'seat-b4-1-3',
     number: 'B4-3',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 230 },
+    position: { x: 825, y: 265 },
     occupied: false,
-    qrCode: 'QR-B4-3'
+    qrCode: 'QR-B4-3',
+    orientation: 'down'
   },
   
-  // 中部エリア（Frame 4） - 2行目
+  // 中部エリア（Frame 4） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b4-2-1',
     number: 'B4-4',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 300 },
+    position: { x: 585, y: 335 },
     occupied: false,
-    qrCode: 'QR-B4-4'
+    qrCode: 'QR-B4-4',
+    orientation: 'up'
   },
   {
     id: 'seat-b4-2-2',
     number: 'B4-5',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 300 },
+    position: { x: 705, y: 335 },
     occupied: false,
-    qrCode: 'QR-B4-5'
+    qrCode: 'QR-B4-5',
+    orientation: 'up'
   },
   {
     id: 'seat-b4-2-3',
     number: 'B4-6',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 300 },
+    position: { x: 825, y: 335 },
     occupied: false,
-    qrCode: 'QR-B4-6'
+    qrCode: 'QR-B4-6',
+    orientation: 'up'
   },
 
-  // 下部エリア（Frame 3） - 1行目
+  // 下部エリア（Frame 3） - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-b3-1-1',
     number: 'B3-1',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 400 },
+    position: { x: 585, y: 455 },
     occupied: false,
-    qrCode: 'QR-B3-1'
+    qrCode: 'QR-B3-1',
+    orientation: 'down'
   },
   {
     id: 'seat-b3-1-2',
     number: 'B3-2',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 400 },
+    position: { x: 705, y: 455 },
     occupied: false,
-    qrCode: 'QR-B3-2'
+    qrCode: 'QR-B3-2',
+    orientation: 'down'
   },
   {
     id: 'seat-b3-1-3',
     number: 'B3-3',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 400 },
+    position: { x: 825, y: 455 },
     occupied: false,
-    qrCode: 'QR-B3-3'
+    qrCode: 'QR-B3-3',
+    orientation: 'down'
   },
   
-  // 下部エリア（Frame 3） - 2行目
+  // 下部エリア（Frame 3） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b3-2-1',
     number: 'B3-4',
     floor: 1,
     section: 'B',
-    position: { x: 550, y: 470 },
+    position: { x: 585, y: 525 },
     occupied: false,
-    qrCode: 'QR-B3-4'
+    qrCode: 'QR-B3-4',
+    orientation: 'up'
   },
   {
     id: 'seat-b3-2-2',
     number: 'B3-5',
     floor: 1,
     section: 'B',
-    position: { x: 670, y: 470 },
+    position: { x: 705, y: 525 },
     occupied: false,
-    qrCode: 'QR-B3-5'
+    qrCode: 'QR-B3-5',
+    orientation: 'up'
   },
   {
     id: 'seat-b3-2-3',
     number: 'B3-6',
     floor: 1,
     section: 'B',
-    position: { x: 790, y: 470 },
+    position: { x: 825, y: 525 },
     occupied: false,
-    qrCode: 'QR-B3-6'
+    qrCode: 'QR-B3-6',
+    orientation: 'up'
   }
 ];
 

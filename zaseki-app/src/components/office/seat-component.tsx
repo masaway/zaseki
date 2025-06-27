@@ -5,6 +5,7 @@ import { Monitor, User } from 'lucide-react';
 import { Seat } from '@/types';
 import { useAppStore } from '@/stores/app-store';
 import { clsx } from 'clsx';
+import { useState } from 'react';
 
 interface SeatComponentProps {
   seat: Seat;
@@ -12,6 +13,7 @@ interface SeatComponentProps {
 
 export function SeatComponent({ seat }: SeatComponentProps) {
   const { setSelectedMember } = useAppStore();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleSeatClick = () => {
     if (seat.occupiedBy) {
@@ -19,16 +21,29 @@ export function SeatComponent({ seat }: SeatComponentProps) {
     }
   };
 
+  const isDownOrientation = seat.orientation === 'down';
+
   return (
+    <>
     <motion.div
-      className="relative cursor-pointer group seat"
+      className={clsx(
+        "relative cursor-pointer group seat",
+        isDownOrientation ? "flex flex-col-reverse" : "flex flex-col"
+      )}
       onClick={handleSeatClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      {/* 座席番号（星座のような表示） */}
-      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-blue-300">
-        ⭐ {seat.number}
+      {/* 座席番号 */}
+      <div className={clsx(
+        "absolute left-1/2 transform -translate-x-1/2 text-xs font-semibold text-blue-300",
+        isDownOrientation 
+          ? "-top-8" 
+          : "-bottom-6"
+      )}>
+        {seat.number}
       </div>
 
       {/* 宇宙ステーション風デスク */}
@@ -63,7 +78,8 @@ export function SeatComponent({ seat }: SeatComponentProps) {
         {/* 宇宙船風椅子 */}
         <div
           className={clsx(
-            'absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-8 h-6 rounded-md border transition-all duration-300',
+            'absolute left-1/2 transform -translate-x-1/2 w-8 h-6 rounded-md border transition-all duration-300',
+            isDownOrientation ? '-top-3' : '-bottom-3',
             seat.occupied
               ? 'bg-gradient-to-b from-blue-700 to-blue-500 border-blue-300 shadow-blue-400/50'
               : 'bg-gradient-to-b from-cyan-700 to-cyan-500 border-cyan-300 shadow-cyan-400/50'
@@ -129,25 +145,15 @@ export function SeatComponent({ seat }: SeatComponentProps) {
         </div>
       </div>
 
-      {/* ホログラム情報パネル */}
-      <div className="opacity-0 group-hover:opacity-100 absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gradient-to-r from-blue-900/90 to-cyan-900/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-blue-400/50 whitespace-nowrap pointer-events-none transition-opacity z-10">
-        {seat.occupied && seat.occupiedBy ? (
-          <div className="space-y-1">
-            <div className="font-semibold text-blue-200">🚀 {seat.occupiedBy.name}</div>
-            <div className="text-cyan-300">{seat.occupiedBy.department}</div>
-            <div className="text-blue-400 text-xs">{seat.occupiedBy.role}</div>
-          </div>
-        ) : (
-          <div className="text-cyan-300">
-            ✨ 空きステーション<br/>
-            <span className="text-xs text-blue-400">チェックインして着席</span>
-          </div>
-        )}
-      </div>
 
       {/* 量子QRコードポート */}
       <motion.div
-        className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-blue-600 to-cyan-600 border border-blue-400 rounded text-xs flex items-center justify-center text-white font-bold shadow-lg"
+        className={clsx(
+          "absolute w-5 h-5 bg-gradient-to-br from-blue-600 to-cyan-600 border border-blue-400 rounded text-xs flex items-center justify-center text-white font-bold shadow-lg",
+          isDownOrientation 
+            ? "-bottom-6 left-0 transform -translate-x-2" 
+            : "-top-6 right-0 transform translate-x-2"
+        )}
         style={{
           boxShadow: '0 0 10px rgba(34, 211, 238, 0.6)'
         }}
@@ -166,5 +172,25 @@ export function SeatComponent({ seat }: SeatComponentProps) {
         </motion.div>
       </motion.div>
     </motion.div>
+    
+    {/* ホログラム情報パネル - 親要素外に配置して最前面表示 */}
+    <div className={clsx(
+      "absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-gradient-to-r from-blue-900/90 to-cyan-900/90 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg border border-blue-400/50 whitespace-nowrap pointer-events-none transition-opacity",
+      isHovered ? "opacity-100" : "opacity-0"
+    )} style={{zIndex: 9999}}>
+      {seat.occupied && seat.occupiedBy ? (
+        <div className="space-y-1">
+          <div className="font-semibold text-blue-200">🚀 {seat.occupiedBy.name}</div>
+          <div className="text-cyan-300">{seat.occupiedBy.department}</div>
+          <div className="text-blue-400 text-xs">{seat.occupiedBy.role}</div>
+        </div>
+      ) : (
+        <div className="text-cyan-300">
+          ✨ 空きステーション<br/>
+          <span className="text-xs text-blue-400">チェックインして着席</span>
+        </div>
+      )}
+    </div>
+    </>
   );
 }

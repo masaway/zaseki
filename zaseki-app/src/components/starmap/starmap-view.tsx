@@ -7,7 +7,7 @@ import { Star } from '../constellation/star';
 import { MemberTooltip } from '../constellation/member-tooltip';
 import { ProjectConnections } from './project-connections';
 import { Seat } from '@/types';
-import { calculateRegionalPosition, getOfficeCenter, transformOfficeLayout, getZoneByPrefecture, calculateGalaxyPosition } from '@/utils/fan-layout';
+import { calculateRegionalPosition, getOfficeCenter, transformOfficeLayout, getZoneByPrefecture } from '@/utils/fan-layout';
 import { Monitor, User } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useZoom } from '@/hooks/use-zoom';
@@ -20,6 +20,7 @@ interface CompactSeatProps {
 
 function CompactSeat({ seat, position, scale = 0.4 }: CompactSeatProps) {
   const { setSelectedMember } = useAppStore();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleSeatClick = () => {
     if (seat.occupiedBy) {
@@ -28,6 +29,7 @@ function CompactSeat({ seat, position, scale = 0.4 }: CompactSeatProps) {
   };
 
   return (
+    <>
     <motion.div
       className="absolute cursor-pointer group"
       style={{
@@ -36,6 +38,8 @@ function CompactSeat({ seat, position, scale = 0.4 }: CompactSeatProps) {
         transform: `scale(${scale})`,
       }}
       onClick={handleSeatClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       whileHover={{ scale: scale * 1.1 }}
       whileTap={{ scale: scale * 0.9 }}
       initial={{ opacity: 0 }}
@@ -96,19 +100,32 @@ function CompactSeat({ seat, position, scale = 0.4 }: CompactSeatProps) {
         )}
       </div>
 
-      {/* ホバー時の詳細情報 */}
-      <div className="opacity-0 group-hover:opacity-100 absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-black bg-opacity-90 text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none transition-opacity z-10">
-        {seat.occupied && seat.occupiedBy ? (
-          <div>
-            <div className="font-semibold">{seat.occupiedBy.name}</div>
-            <div className="text-gray-300">{seat.occupiedBy.department}</div>
-            <div className="text-blue-300">{seat.occupiedBy.status}</div>
-          </div>
-        ) : (
-          '空席'
-        )}
-      </div>
     </motion.div>
+    
+    {/* ホバー時の詳細情報 - 親要素外に配置して最前面表示 */}
+    <div 
+      className={clsx(
+        "absolute bg-black bg-opacity-90 text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none transition-opacity",
+        isHovered ? "opacity-100" : "opacity-0"
+      )}
+      style={{
+        zIndex: 9999,
+        left: position.x - 40, // ツールチップの中央を座席に合わせる
+        top: position.y + 30, // 座席の下に表示
+        transform: `scale(${1 / scale})` // scaleの逆数でリセットして正常サイズに
+      }}
+    >
+      {seat.occupied && seat.occupiedBy ? (
+        <div>
+          <div className="font-semibold">{seat.occupiedBy.name}</div>
+          <div className="text-gray-300">{seat.occupiedBy.department}</div>
+          <div className="text-blue-300">{seat.occupiedBy.status}</div>
+        </div>
+      ) : (
+        '空席'
+      )}
+    </div>
+    </>
   );
 }
 

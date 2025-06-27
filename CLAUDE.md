@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ドキュメントは日本語でまとめること
 - ライブラリ周りを調べるときはcontext7を参照すること
 - 企画書やドキュメントは、`docs`ディレクトリにまとめること
+- playwrightでのテストは指示があったときのみ行うこと
 
 ## 座席表システムの重要原則
 - **座席配置は実際のオフィスレイアウトに対応**: 銀河などの装飾的な配置は禁止
