@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from "react";
 
 interface ZoomState {
   scale: number;
@@ -34,23 +34,44 @@ export const useZoom = (initialScale = 1): ZoomControls => {
 
   const handleWheel = useCallback((event: React.WheelEvent) => {
     event.preventDefault();
-    
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    const currentTarget = event.currentTarget as HTMLElement;
+    if (!currentTarget) return;
+
+    const rect = currentTarget.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    setZoomState(prevState => {
+    setZoomState((prevState) => {
       const delta = -event.deltaY * ZOOM_SENSITIVITY;
       let newScale = prevState.scale + delta;
-      
+
       newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
-      
+
       if (newScale === prevState.scale) return prevState;
 
-      const scaleRatio = newScale / prevState.scale;
-      
-      const newTranslateX = mouseX - (mouseX - prevState.translateX) * scaleRatio;
-      const newTranslateY = mouseY - (mouseY - prevState.translateY) * scaleRatio;
+      // マウス位置を支点にしたズーム計算
+      // transform-origin: centerを考慮した計算
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // マウス位置の中心からの相対位置
+      const relativeMouseX = mouseX - centerX;
+      const relativeMouseY = mouseY - centerY;
+
+      // 現在のスケールでの実際のマウス位置（transform適用後）
+      const actualMouseX =
+        (relativeMouseX - prevState.translateX) / prevState.scale;
+      const actualMouseY =
+        (relativeMouseY - prevState.translateY) / prevState.scale;
+
+      // 新しいスケールでのマウス位置
+      const newMouseX = actualMouseX * newScale;
+      const newMouseY = actualMouseY * newScale;
+
+      // マウス位置が変わらないようにtranslateを調整
+      const newTranslateX = relativeMouseX - newMouseX;
+      const newTranslateY = relativeMouseY - newMouseY;
 
       return {
         scale: newScale,
@@ -74,7 +95,7 @@ export const useZoom = (initialScale = 1): ZoomControls => {
     const deltaX = event.clientX - lastMousePosition.current.x;
     const deltaY = event.clientY - lastMousePosition.current.y;
 
-    setZoomState(prevState => ({
+    setZoomState((prevState) => ({
       ...prevState,
       translateX: prevState.translateX + deltaX,
       translateY: prevState.translateY + deltaY,
@@ -96,14 +117,14 @@ export const useZoom = (initialScale = 1): ZoomControls => {
   }, []);
 
   const zoomIn = useCallback(() => {
-    setZoomState(prevState => ({
+    setZoomState((prevState) => ({
       ...prevState,
       scale: Math.min(MAX_SCALE, prevState.scale + ZOOM_STEP),
     }));
   }, []);
 
   const zoomOut = useCallback(() => {
-    setZoomState(prevState => ({
+    setZoomState((prevState) => ({
       ...prevState,
       scale: Math.max(MIN_SCALE, prevState.scale - ZOOM_STEP),
     }));

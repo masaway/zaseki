@@ -175,6 +175,24 @@ const mockMembers: Member[] = [
     status: 'online',
     comment: 'CI/CD構築中',
     project: 'Infrastructure'
+  },
+  {
+    id: '13',
+    name: '五島健助',
+    avatar: '👨‍💼',
+    department: 'エンジニアリング',
+    role: 'フルスタック',
+    status: 'online',
+    comment: 'レビュー地獄',
+    project: 'WebApp',
+    location: {
+      id: 'location-5',
+      type: 'remote',
+      name: '新潟市',
+      city: '新潟県',
+      prefecture: '新潟県',
+      coordinates: { x: 600, y: 600 } // オフィス近郊（在宅勤務）
+    }
   }
 ];
 
@@ -184,7 +202,7 @@ const mockSeats: Seat[] = [
   // セクションA枠位置: left: 15, top: 15, width: 480, height: 570
   // 座席間隔: 横120px、縦70px、エリア間80px（隙間拡大）
   // 座席群をセクション枠中央に配置: 枠内余白40px、座席エリア開始位置x=95
-  
+
   // 上部エリア - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-a-top-1-1',
@@ -219,7 +237,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-A-T3',
     orientation: 'down'
   },
-  
+
   // 上部エリア - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a-top-2-1',
@@ -283,7 +301,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-A4-3',
     orientation: 'down'
   },
-  
+
   // 中部エリア（Frame 4） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a4-2-1',
@@ -347,7 +365,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-A3-3',
     orientation: 'down'
   },
-  
+
   // 下部エリア（Frame 3） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-a3-2-1',
@@ -384,7 +402,7 @@ const mockSeats: Seat[] = [
   // セクションB枠位置: left: 505, top: 15, width: 480, height: 570
   // 座席間隔: 横120px、縦70px、エリア間80px（隙間拡大）
   // 座席群をセクション枠中央に配置: 枠内余白40px、座席エリア開始位置x=585
-  
+
   // 上部エリア - 1行目（向き合う形の前列 - 下向き：テーブル向き）
   {
     id: 'seat-b-top-1-1',
@@ -419,7 +437,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-B-T3',
     orientation: 'down'
   },
-  
+
   // 上部エリア - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b-top-2-1',
@@ -485,7 +503,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-B4-3',
     orientation: 'down'
   },
-  
+
   // 中部エリア（Frame 4） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b4-2-1',
@@ -549,7 +567,7 @@ const mockSeats: Seat[] = [
     qrCode: 'QR-B3-3',
     orientation: 'down'
   },
-  
+
   // 下部エリア（Frame 3） - 2行目（向き合う形の後列 - 上向き：テーブル向き）
   {
     id: 'seat-b3-2-1',
@@ -644,23 +662,23 @@ export const useAppStore = create<AppStore>((set) => ({
   },
 
   setCurrentView: (view) => set({ currentView: view }),
-  
+
   setSelectedMember: (member) => set({ selectedMember: member }),
-  
+
   updateMemberStatus: (id, status) =>
     set((state) => ({
       members: state.members.map((member) =>
         member.id === id ? { ...member, status } : member
       ),
     })),
-  
+
   updateMemberComment: (id, comment) =>
     set((state) => ({
       members: state.members.map((member) =>
         member.id === id ? { ...member, comment } : member
       ),
     })),
-  
+
   occupySeat: (seatId, member) =>
     set((state) => ({
       seats: state.seats.map((seat) =>
@@ -669,7 +687,7 @@ export const useAppStore = create<AppStore>((set) => ({
           : seat
       ),
     })),
-  
+
   vacateSeat: (seatId) =>
     set((state) => ({
       seats: state.seats.map((seat) =>
@@ -680,8 +698,8 @@ export const useAppStore = create<AppStore>((set) => ({
     })),
 
   setZoomState: (zoomState) => set({ zoomState }),
-  
-  resetZoom: () => set({ 
-    zoomState: { scale: 1, translateX: 0, translateY: 0 } 
+
+  resetZoom: () => set({
+    zoomState: { scale: 1, translateX: 0, translateY: 0 }
   }),
 }));

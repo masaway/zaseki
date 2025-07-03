@@ -40,7 +40,7 @@ export function ViewSwitcher() {
                   transition={{ duration: 0.3 }}
                 />
               )}
-              
+
               {/* アイコンとテキスト */}
               <div className="relative flex items-center space-x-2">
                 <Icon size={16} />
