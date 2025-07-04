@@ -5,6 +5,11 @@ const USER_INFO_KEY = 'zaseki_user_info';
 export const localStorageUtils = {
   // ユーザー情報を保存
   saveUserInfo(userInfo: UserInfo): void {
+    // ブラウザ環境チェック
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     try {
       const jsonData = JSON.stringify(userInfo);
       localStorage.setItem(USER_INFO_KEY, jsonData);
@@ -15,6 +20,11 @@ export const localStorageUtils = {
 
   // ユーザー情報を取得
   getUserInfo(): UserInfo | null {
+    // ブラウザ環境チェック
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    
     try {
       const jsonData = localStorage.getItem(USER_INFO_KEY);
       if (!jsonData) return null;
@@ -35,6 +45,11 @@ export const localStorageUtils = {
 
   // ユーザー情報を削除
   clearUserInfo(): void {
+    // ブラウザ環境チェック
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     try {
       localStorage.removeItem(USER_INFO_KEY);
     } catch (error) {

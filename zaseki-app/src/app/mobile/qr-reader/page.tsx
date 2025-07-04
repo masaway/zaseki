@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { QRScannerComponent } from '@/components/mobile/qr-scanner';
 import { QRCodeData } from '@/lib/supabase';
@@ -10,6 +10,12 @@ export default function QRReaderPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasUserInfo, setHasUserInfo] = useState(false);
+
+  // クライアントサイドでのみユーザー情報をチェック
+  useEffect(() => {
+    setHasUserInfo(localStorageUtils.hasUserInfo());
+  }, []);
 
   const handleQRScan = async (qrData: QRCodeData) => {
     if (isProcessing) return;
@@ -53,8 +59,6 @@ export default function QRReaderPage() {
   const clearError = () => {
     setError(null);
   };
-
-  const hasUserInfo = localStorageUtils.hasUserInfo();
 
   return (
     <div className="max-w-md mx-auto space-y-6">
@@ -171,7 +175,10 @@ export default function QRReaderPage() {
         </button>
         {hasUserInfo && (
           <button
-            onClick={() => localStorageUtils.clearUserInfo()}
+            onClick={() => {
+              localStorageUtils.clearUserInfo();
+              setHasUserInfo(false);
+            }}
             className="flex-1 py-3 px-4 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
           >
             ユーザー情報をリセット
