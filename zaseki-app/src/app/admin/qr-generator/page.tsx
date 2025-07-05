@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { qrCodeGenerator } from '@/utils/qr-code-generator';
+import { supabaseApi } from '@/lib/supabase';
 
 export default function QRGeneratorPage() {
   const [seatIds, setSeatIds] = useState<string[]>(['']);
   const [generatedQRCodes, setGeneratedQRCodes] = useState<Array<{ seatId: string; dataUrl: string }>>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [availableSeats, setAvailableSeats] = useState<string[]>([]);
+  const [isLoadingSeats, setIsLoadingSeats] = useState(false);
 
   const addSeatInput = () => {
     setSeatIds([...seatIds, '']);
@@ -23,18 +26,43 @@ export default function QRGeneratorPage() {
     setSeatIds(updated);
   };
 
-  const generateBulkSeatIds = () => {
-    const sections = ['A', 'B', 'C', 'D'];
-    const seatsPerSection = 9;
-    const bulkIds: string[] = [];
-
-    sections.forEach(section => {
-      for (let i = 1; i <= seatsPerSection; i++) {
-        bulkIds.push(`${section}-${i.toString().padStart(2, '0')}`);
+  // Supabaseから座席データを取得
+  useEffect(() => {
+    const loadAvailableSeats = async () => {
+      setIsLoadingSeats(true);
+      try {
+        const seats = await supabaseApi.getAllSeats();
+        const seatIds = seats.map(seat => seat.seat_id);
+        setAvailableSeats(seatIds);
+      } catch (error) {
+        console.error('座席データの取得に失敗:', error);
+        setError('座席データの取得に失敗しました');
+      } finally {
+        setIsLoadingSeats(false);
       }
-    });
+    };
 
-    setSeatIds(bulkIds);
+    loadAvailableSeats();
+  }, []);
+
+  const generateBulkSeatIds = () => {
+    // Supabaseから取得した実際の座席IDを使用
+    if (availableSeats.length > 0) {
+      setSeatIds(availableSeats);
+    } else {
+      // フォールバック: 従来のハードコード
+      const sections = ['A', 'B'];
+      const seatPatterns = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6'];
+      const bulkIds: string[] = [];
+
+      sections.forEach(section => {
+        seatPatterns.forEach(pattern => {
+          bulkIds.push(`${section}-${pattern}`);
+        });
+      });
+
+      setSeatIds(bulkIds);
+    }
   };
 
   const generateQRCodes = async () => {
@@ -101,9 +129,10 @@ export default function QRGeneratorPage() {
           <div className="space-x-2">
             <button
               onClick={generateBulkSeatIds}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              disabled={isLoadingSeats}
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:bg-gray-400"
             >
-              一括生成 (A-01〜D-09)
+              {isLoadingSeats ? '読み込み中...' : `一括生成 (${availableSeats.length > 0 ? availableSeats.length + '席' : 'DB取得'})`}
             </button>
             <button
               onClick={addSeatInput}

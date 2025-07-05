@@ -1,14 +1,30 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useAppStore } from '@/stores/app-store';
+import { useOfficeStore } from '@/stores/office-store';
 import { SeatComponent } from './seat-component';
 import { MemberTooltip } from '../constellation/member-tooltip';
 import { useState, useEffect } from 'react';
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export function OfficeView() {
-  const { seats, selectedMember, setSelectedMember } = useAppStore();
+  const { 
+    seats, 
+    selectedMember, 
+    setSelectedMember, 
+    isLoading, 
+    error, 
+    loadSeats,
+    refreshSeats 
+  } = useOfficeStore();
   const [screenSize, setScreenSize] = useState({ width: 1024, height: 768 });
+
+  // 初回データ読み込み
+  useEffect(() => {
+    if (seats.length === 0) {
+      loadSeats();
+    }
+  }, [seats.length, loadSeats]);
 
   useEffect(() => {
     const updateScreenSize = () => {
@@ -28,6 +44,66 @@ export function OfficeView() {
     x: screenSize.width / 2,
     y: screenSize.height / 2
   };
+
+  // エラー状態の表示
+  if (error) {
+    return (
+      <div className="relative w-full h-full bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900 overflow-hidden flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white/10 backdrop-blur-md rounded-lg p-8 max-w-md mx-4"
+        >
+          <div className="flex flex-col items-center space-y-4">
+            <AlertTriangle className="w-12 h-12 text-red-400" />
+            <div className="text-center">
+              <h3 className="text-white text-xl font-semibold mb-2">
+                座席データの読み込みに失敗
+              </h3>
+              <p className="text-white/80 text-sm mb-4">
+                {error}
+              </p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={refreshSeats}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>再試行</span>
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ローディング状態の表示
+  if (isLoading) {
+    return (
+      <div className="relative w-full h-full bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900 overflow-hidden flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white/10 backdrop-blur-md rounded-lg p-8 flex flex-col items-center space-y-4"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="w-8 h-8 text-white" />
+          </motion.div>
+          <div className="text-center">
+            <p className="text-white text-lg font-medium">座席データを読み込み中...</p>
+            <p className="text-white/60 text-sm mt-1">
+              しばらくお待ちください
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900 overflow-hidden">
